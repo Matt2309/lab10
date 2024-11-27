@@ -1,6 +1,6 @@
 package it.unibo.mvc;
 
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,7 +27,19 @@ public final class DrawNumberApp implements DrawNumberViewObserver {
             view.setObserver(this);
             view.start();
         }
-        this.model = new DrawNumberImpl(MIN, MAX, ATTEMPTS);
+
+        Configuration.Builder builder = new Configuration.Builder();
+        try(InputStream inputStream = DrawNumberApp.class.getResourceAsStream("/config.yml");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        ){
+            builder.setMin(Integer.parseInt(reader.readLine().split(": ")[1]));
+            builder.setMax(Integer.parseInt(reader.readLine().split(": ")[1]));
+            builder.setAttempts(Integer.parseInt(reader.readLine().split(": ")[1]));
+        }catch(IOException e){
+            System.out.println("Errore di lettura file di configurazione: " + e.getMessage());
+        }
+        Configuration config = builder.build();
+        this.model = new DrawNumberImpl(config.getMin(), config.getMax(), config.getAttempts());
     }
 
     @Override
