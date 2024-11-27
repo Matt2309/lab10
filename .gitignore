@@ -1,0 +1,12 @@
+.bin/*
+.lock/*
+.properties/*
+.MF/*
+*.bin
+*.lock
+*.properties
+*.ser
+*.xml
+.MF
+*.class
+.class/*
