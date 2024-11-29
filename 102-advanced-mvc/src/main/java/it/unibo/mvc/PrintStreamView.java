@@ -49,6 +49,11 @@ public final class PrintStreamView implements DrawNumberView {
     }
 
     @Override
+    public void displayError(String message) {
+        out.println(message);
+    }
+
+    @Override
     public void numberIncorrect() {
         out.println("You must enter a number");
     }
