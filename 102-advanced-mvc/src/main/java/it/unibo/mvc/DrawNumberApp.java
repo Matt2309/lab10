@@ -1,6 +1,11 @@
 package it.unibo.mvc;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,7 +40,10 @@ public final class DrawNumberApp implements DrawNumberViewObserver {
             builder.setMin(Integer.parseInt(reader.readLine().split(": ")[1]));
             builder.setMax(Integer.parseInt(reader.readLine().split(": ")[1]));
             builder.setAttempts(Integer.parseInt(reader.readLine().split(": ")[1]));
-        }catch(IOException e){
+        }catch(Exception e){ //fallback
+            builder.setMin(MIN);
+            builder.setMax(MAX);
+            builder.setAttempts(ATTEMPTS);
             System.out.println("Errore di lettura file di configurazione: " + e.getMessage());
         }
         Configuration config = builder.build();
@@ -78,7 +86,18 @@ public final class DrawNumberApp implements DrawNumberViewObserver {
      * @throws FileNotFoundException 
      */
     public static void main(final String... args) throws FileNotFoundException {
-        new DrawNumberApp(new DrawNumberViewImpl());
-    }
+        List<DrawNumberView> views = new ArrayList<>();
+        
+        views.add(new DrawNumberViewImpl());
+        views.add(new DrawNumberViewImpl());
+        views.add(new PrintStreamView(new PrintStream(System.out)));
 
+        try {
+            views.add(new PrintStreamView(new PrintStream("logger.txt")));
+        } catch (FileNotFoundException e) {
+            System.err.println("Errore: file logger.txt non trovato. Errore: " + e.getMessage());
+        }
+
+        new DrawNumberApp(views.toArray(new DrawNumberView[0]));
+    }
 }
